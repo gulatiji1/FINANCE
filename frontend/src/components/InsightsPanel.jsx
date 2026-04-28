@@ -3,7 +3,7 @@ function InsightsPanel({ insights }) {
     <section className="panel">
       <div className="panel-header">
         <h3>AI Insights</h3>
-        <p>Generated with Gemini + market context</p>
+        <p>Generated with Groq + market context</p>
       </div>
       <div className="insight-grid">
         <article className="insight-card">
@@ -40,4 +40,3 @@ function InsightsPanel({ insights }) {
 }
 
 export default InsightsPanel;
-

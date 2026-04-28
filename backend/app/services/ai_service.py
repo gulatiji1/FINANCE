@@ -1,14 +1,10 @@
 import json
 from typing import Any
 
+import requests
 from cachetools import TTLCache
 
 from app.core.config import get_settings
-
-try:
-    import google.generativeai as genai
-except ImportError:  # pragma: no cover
-    genai = None
 
 
 def _as_percent_text(value: float | None) -> str:
@@ -45,21 +41,47 @@ def _ensure_list(value: Any) -> list[str]:
 class AIService:
     def __init__(self) -> None:
         settings = get_settings()
-        self._api_key = settings.gemini_api_key
-        self._model_name = settings.gemini_model
+        self._api_key = settings.groq_api_key
+        self._model_name = settings.groq_model
+        self._timeout = settings.request_timeout_seconds
         self._cache = TTLCache(maxsize=500, ttl=settings.insight_cache_ttl_seconds)
-        self._client = None
-
-        if self._api_key and genai is not None:
-            genai.configure(api_key=self._api_key)
-            self._client = genai.GenerativeModel(self._model_name)
+        self._endpoint = "https://api.groq.com/openai/v1/chat/completions"
 
     def _generate_json(self, prompt: str) -> dict[str, Any]:
-        if not self._client:
+        if not self._api_key:
             return {}
+
+        headers = {
+            "Authorization": f"Bearer {self._api_key}",
+            "Content-Type": "application/json",
+        }
+        payload = {
+            "model": self._model_name,
+            "messages": [
+                {
+                    "role": "system",
+                    "content": (
+                        "You are a strict JSON financial analysis assistant. "
+                        "Return only valid JSON without markdown or code fences."
+                    ),
+                },
+                {"role": "user", "content": prompt},
+            ],
+            "temperature": 0.2,
+        }
         try:
-            response = self._client.generate_content(prompt)
-            text = getattr(response, "text", "") or ""
+            response = requests.post(
+                self._endpoint,
+                headers=headers,
+                json=payload,
+                timeout=self._timeout,
+            )
+            response.raise_for_status()
+            body = response.json()
+            choices = body.get("choices") or []
+            if not choices:
+                return {}
+            text = (choices[0].get("message") or {}).get("content") or ""
             return _json_from_text(text)
         except Exception:
             return {}

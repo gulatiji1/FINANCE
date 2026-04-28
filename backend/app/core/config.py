@@ -9,8 +9,8 @@ class Settings(BaseSettings):
     api_prefix: str = "/api"
     cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:5173"])
     news_api_key: str | None = None
-    gemini_api_key: str | None = None
-    gemini_model: str = "gemini-1.5-flash"
+    groq_api_key: str | None = None
+    groq_model: str = "llama-3.3-70b-versatile"
     request_timeout_seconds: int = 20
     stock_cache_ttl_seconds: int = 300
     news_cache_ttl_seconds: int = 600
@@ -22,4 +22,3 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
-

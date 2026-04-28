@@ -4,7 +4,7 @@ A modern, responsive, AI-powered financial web app to explore and analyze Indian
 
 - Real-time market data from `yfinance`
 - News context from `NewsAPI`
-- AI-generated insights and chat with `Google Gemini`
+- AI-generated insights and chat with `Groq API`
 - FastAPI backend + React frontend
 
 ## Features
@@ -61,7 +61,7 @@ copy .env.example .env
 2. Fill keys in `.env`:
 
 - `NEWS_API_KEY`
-- `GEMINI_API_KEY`
+- `GROQ_API_KEY`
 
 3. Install and run:
 
@@ -101,7 +101,7 @@ Frontend starts at `http://localhost:5173` and calls backend at `http://localhos
 ## Notes on Reliability
 
 - In-memory TTL caching reduces repeated external API calls and helps with rate limits.
-- If NewsAPI or Gemini keys are missing/unavailable:
+- If NewsAPI or Groq keys are missing/unavailable:
   - News returns empty list safely.
   - AI routes return structured fallback insights.
 - Symbol resolution supports NSE/BSE suffix handling:
