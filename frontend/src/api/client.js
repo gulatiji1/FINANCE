@@ -1,6 +1,12 @@
 import axios from "axios";
 
-const baseURL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+const isBrowser = typeof window !== "undefined";
+const localHosts = new Set(["localhost", "127.0.0.1"]);
+const isLocalDev = isBrowser && localHosts.has(window.location.hostname);
+
+const baseURL =
+  import.meta.env.VITE_API_URL ||
+  (isLocalDev ? "http://localhost:8000/api" : "/_/backend/api");
 
 const client = axios.create({
   baseURL,
@@ -8,4 +14,3 @@ const client = axios.create({
 });
 
 export default client;
-
