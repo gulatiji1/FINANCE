@@ -8,6 +8,10 @@ function SearchBar({ onSearch, initialValue = "" }) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    setInput(initialValue);
+  }, [initialValue]);
+
+  useEffect(() => {
     const cleanInput = input.trim();
     if (cleanInput.length < 2) {
       setSuggestions([]);
@@ -77,4 +81,3 @@ function SearchBar({ onSearch, initialValue = "" }) {
 }
 
 export default SearchBar;
-

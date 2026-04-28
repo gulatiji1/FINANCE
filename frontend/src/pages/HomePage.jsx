@@ -1,7 +1,13 @@
-import { ArrowDown } from "lucide-react";
+import { ArrowUpRight, CircleDollarSign, Sparkles, TrendingUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ChatPanel from "../components/ChatPanel";
 import SearchBar from "../components/SearchBar";
+
+const quickStats = [
+  { label: "NSE Leaders", value: "50+", icon: TrendingUp },
+  { label: "AI Insights", value: "Realtime", icon: Sparkles },
+  { label: "Market Coverage", value: "NSE/BSE", icon: CircleDollarSign },
+];
 
 function HomePage() {
   const navigate = useNavigate();
@@ -10,43 +16,43 @@ function HomePage() {
     navigate(`/company/${symbol}`);
   };
 
-  const scrollToChat = () => {
-    const chatSection = document.getElementById("chat-section");
-    if (chatSection) chatSection.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
   return (
-    <div className="page home-page">
-      <section className="hero">
-        <div className="hero-content">
-          <p className="eyebrow">NSE/BSE Equity Intelligence</p>
+    <div className="dashboard-page">
+      <section className="welcome-strip glass-card">
+        <div>
+          <p className="eyebrow">AI Stock Research Assistant</p>
           <h1>Understand the Market. Make Smarter Decisions.</h1>
-          <p className="hero-subheading">
+          <p className="subtle-text">
             Explore companies, analyze stocks, and get AI-powered insights.
           </p>
-          <SearchBar onSearch={handleSearch} />
-          <button type="button" className="scroll-trigger" onClick={scrollToChat}>
-            Ask Anything About Stocks <ArrowDown size={16} />
+        </div>
+        <div className="quick-actions">
+          <button type="button" onClick={() => navigate("/company/TCS")}>
+            Analyze TCS <ArrowUpRight size={14} />
+          </button>
+          <button type="button" onClick={() => navigate("/compare")}>
+            Compare Stocks <ArrowUpRight size={14} />
           </button>
         </div>
       </section>
 
-      <section className="feature-band">
-        <article>
-          <h3>Company Intelligence</h3>
-          <p>Company profile, valuation markers, leadership context, and AI business-model explanation.</p>
-        </article>
-        <article>
-          <h3>Market Analytics</h3>
-          <p>Trend indicators, returns, volatility, moving averages, and historical chart interaction.</p>
-        </article>
-        <article>
-          <h3>AI Research Assistant</h3>
-          <p>Ask natural-language questions and get structured summary, growth, risk, and insight outputs.</p>
-        </article>
+      <section className="search-zone glass-card">
+        <SearchBar onSearch={handleSearch} />
       </section>
 
-      <section id="chat-section" className="chat-section">
+      <section className="kpi-strip">
+        {quickStats.map(({ label, value, icon: Icon }) => (
+          <article className="kpi-item glass-card" key={label}>
+            <div className="kpi-title">
+              <Icon size={15} />
+              <span>{label}</span>
+            </div>
+            <h3>{value}</h3>
+          </article>
+        ))}
+      </section>
+
+      <section className="chat-section">
         <ChatPanel showExamples />
       </section>
     </div>
@@ -54,4 +60,3 @@ function HomePage() {
 }
 
 export default HomePage;
-

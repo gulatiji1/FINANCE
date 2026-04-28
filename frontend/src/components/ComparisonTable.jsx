@@ -17,8 +17,8 @@ function formatMetricValue(key, value) {
 function ComparisonTable({ data }) {
   const rows = metricLabelMap();
   return (
-    <section className="panel">
-      <div className="panel-header">
+    <section className="glass-card">
+      <div className="section-head">
         <h3>Comparison</h3>
         <p>Side-by-side financial snapshot</p>
       </div>

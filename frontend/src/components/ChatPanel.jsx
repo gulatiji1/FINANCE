@@ -54,10 +54,10 @@ function ChatPanel({ symbol, showExamples = false }) {
   };
 
   return (
-    <section className="panel chatbot-panel">
-      <div className="panel-header">
+    <section className="glass-card chatbot-panel">
+      <div className="section-head">
         <h3>Ask Anything About Stocks</h3>
-        <p>AI financial research assistant</p>
+        <p>Structured AI research output</p>
       </div>
 
       {showExamples && (
@@ -118,4 +118,3 @@ function ChatPanel({ symbol, showExamples = false }) {
 }
 
 export default ChatPanel;
-

@@ -26,11 +26,11 @@ function ComparePage() {
   };
 
   return (
-    <div className="page compare-page">
-      <section className="panel">
-        <div className="panel-header">
+    <div className="dashboard-page compare-page">
+      <section className="glass-card">
+        <div className="section-head">
           <h3>Compare Two Companies</h3>
-          <p>Revenue, margins, ROE, stock performance, market cap, and AI summary</p>
+          <p>Financial and AI-based side-by-side analysis</p>
         </div>
         <form className="compare-form" onSubmit={handleSubmit}>
           <input value={symbol1} onChange={(event) => setSymbol1(event.target.value)} placeholder="First symbol" />
@@ -47,4 +47,3 @@ function ComparePage() {
 }
 
 export default ComparePage;
-

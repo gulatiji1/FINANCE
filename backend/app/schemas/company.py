@@ -6,6 +6,10 @@ class CompanyOverview(BaseModel):
     exchange_symbol: str
     name: str
     sector: str | None = None
+    industry: str | None = None
+    hq_location: str | None = None
+    founded_year: int | None = None
+    website: str | None = None
     market_cap: float | None = None
     ceo: str | None = None
     description: str | None = None
@@ -24,6 +28,9 @@ class CompanyDataResponse(BaseModel):
     overview: CompanyOverview
     chart_data: list[ChartPoint]
     key_stats: dict[str, float | str | None]
+    financial_trends: list[dict[str, float | str | None]] = Field(default_factory=list)
+    segment_distribution: list[dict[str, float | str]] = Field(default_factory=list)
+    business_tags: list[str] = Field(default_factory=list)
 
 
 class CompanySearchItem(BaseModel):
@@ -34,4 +41,3 @@ class CompanySearchItem(BaseModel):
 
 class CompanySearchResponse(BaseModel):
     results: list[CompanySearchItem] = Field(default_factory=list)
-
