@@ -5,6 +5,7 @@ from app.schemas.ai import AIInsightsResponse
 from app.schemas.analytics import AnalyticsResponse
 from app.schemas.company import CompanySearchResponse
 from app.schemas.company import CompanyDataResponse
+from app.schemas.market import MarketOverviewResponse
 from app.schemas.news import NewsResponse
 from app.services.ai_service import AIService
 from app.services.news_service import NewsService
@@ -23,6 +24,15 @@ def search_company(q: str = Query(..., min_length=1, max_length=40)) -> CompanyS
         if query in stock["symbol"].lower() or query in stock["name"].lower()
     ]
     return CompanySearchResponse(results=matches[:8])
+
+
+@router.get("/market/overview", response_model=MarketOverviewResponse)
+def market_overview(
+    limit: int = Query(15, ge=5, le=25),
+    stock_service: StockService = Depends(get_stock_service),
+) -> MarketOverviewResponse:
+    payload = stock_service.get_market_overview(limit=limit)
+    return MarketOverviewResponse(**payload)
 
 
 @router.get("/company/{symbol}", response_model=CompanyDataResponse)
@@ -62,4 +72,3 @@ def get_company_insights(
     news_items = news_service.get_company_news(overview["name"], overview["symbol"])
     insights = ai_service.generate_company_insights(company, analytics, news_items)
     return AIInsightsResponse(symbol=overview["exchange_symbol"], **insights)
-

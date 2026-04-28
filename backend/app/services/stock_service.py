@@ -9,6 +9,7 @@ from cachetools import TTLCache
 
 from app.core.config import get_settings
 from app.core.errors import AppError
+from app.utils.indian_stocks import TOP_INDIAN_STOCKS
 from app.utils.symbols import build_symbol_candidates
 
 
@@ -394,4 +395,65 @@ class StockService:
             "profit_margin": key_stats.get("profit_margin"),
             "roe": key_stats.get("roe"),
             "one_year_return": analytics["performance"]["one_year"],
+        }
+
+    def get_market_overview(self, limit: int = 15) -> dict[str, Any]:
+        selected = TOP_INDIAN_STOCKS[: max(1, min(limit, len(TOP_INDIAN_STOCKS)))]
+        rows: list[dict[str, Any]] = []
+        sector_pe_agg: dict[str, list[float]] = {}
+
+        for stock in selected:
+            symbol = stock["symbol"]
+            try:
+                company = self.get_company_data(symbol, period="3mo")
+            except AppError:
+                continue
+
+            overview = company["overview"]
+            key_stats = company["key_stats"]
+            chart_data = company["chart_data"]
+            if not chart_data:
+                continue
+
+            latest = chart_data[-1]
+            prev = chart_data[-2] if len(chart_data) > 1 else latest
+            latest_close = _safe_float(latest.get("close"))
+            previous_close = _safe_float(prev.get("close"))
+            change_percent = None
+            if latest_close is not None and previous_close is not None and previous_close != 0:
+                change_percent = ((latest_close - previous_close) / previous_close) * 100
+
+            sector = overview.get("sector") or "Other"
+            pe_ratio = _safe_float(key_stats.get("trailing_pe"))
+            if pe_ratio is not None and pe_ratio > 0:
+                sector_pe_agg.setdefault(sector, []).append(pe_ratio)
+
+            rows.append(
+                {
+                    "symbol": overview["exchange_symbol"],
+                    "name": overview["name"],
+                    "sector": overview.get("sector"),
+                    "price": latest_close,
+                    "change_percent": _safe_float(change_percent),
+                    "volume": _safe_int(latest.get("volume")),
+                    "pe_ratio": pe_ratio,
+                    "market_cap": _safe_float(overview.get("market_cap")),
+                    "history": [{"date": point["date"], "close": point["close"]} for point in chart_data[-30:]],
+                }
+            )
+
+        sector_pe = [
+            {
+                "sector": sector,
+                "pe_ratio": round(sum(values) / len(values), 2),
+            }
+            for sector, values in sector_pe_agg.items()
+            if values
+        ]
+        sector_pe.sort(key=lambda item: item["pe_ratio"], reverse=True)
+
+        return {
+            "as_of": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "rows": rows,
+            "sector_pe": sector_pe[:8],
         }

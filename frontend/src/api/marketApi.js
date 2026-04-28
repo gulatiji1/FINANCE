@@ -5,6 +5,11 @@ export async function searchCompanies(query) {
   return data.results || [];
 }
 
+export async function getMarketOverview(limit = 15) {
+  const { data } = await client.get("/market/overview", { params: { limit } });
+  return data;
+}
+
 export async function getCompany(symbol) {
   const { data } = await client.get(`/company/${symbol}`);
   return data;
@@ -34,4 +39,3 @@ export async function askChat(question, symbol) {
   const { data } = await client.post("/chat", { question, symbol: symbol || null });
   return data;
 }
-

@@ -149,7 +149,7 @@ function CompanyPage() {
   return (
     <div className="dashboard-page">
       <section className="search-zone glass-card">
-        <SearchBar onSearch={(nextSymbol) => navigate(`/company/${nextSymbol}`)} initialValue={symbol || ""} />
+        <SearchBar onSearch={(nextSymbol) => navigate(`/company/${nextSymbol}`)} initialValue="" />
       </section>
 
       {loading && <LoadingState label="Loading company intelligence..." />}
